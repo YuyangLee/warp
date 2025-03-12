@@ -28,9 +28,7 @@ from wheel.bdist_wheel import bdist_wheel
 # ourselves because when bdist_wheel runs it's too late to select a subset of libraries for package_data.
 parser = argparse.ArgumentParser()
 parser.add_argument("command")
-parser.add_argument(
-    "--platform", "-P", type=str, default="", help="Wheel platform: windows|linux|macos-x86_64|aarch64|universal"
-)
+parser.add_argument("--platform", "-P", type=str, default="", help="Wheel platform: windows|linux|macos-x86_64|aarch64|universal")
 args = parser.parse_known_args()[0]
 
 
@@ -126,9 +124,7 @@ if args.command == "bdist_wheel":
     if wheel_platform is None:
         if len(detected_platforms) > 1:
             print("Libraries for multiple platforms were detected.")
-            print(
-                "Run `python -m build --wheel -C--build-option=-P[windows|linux|macos]-[x86_64|aarch64|universal]` to select a specific one."
-            )
+            print("Run `python -m build --wheel -C--build-option=-P[windows|linux|macos]-[x86_64|aarch64|universal]` to select a specific one.")
             # Select the libraries corresponding with the this machine's platform
             for p in platforms:
                 if p.os == machine_os() and p.arch == machine_architecture():

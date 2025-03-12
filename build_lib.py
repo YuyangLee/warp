@@ -29,7 +29,13 @@ import platform
 import shutil
 import subprocess
 
-from warp.build_dll import build_dll, find_host_compiler, machine_architecture, set_msvc_env, verbose_cmd
+from warp.build_dll import (
+    build_dll,
+    find_host_compiler,
+    machine_architecture,
+    set_msvc_env,
+    verbose_cmd,
+)
 from warp.context import export_builtins
 
 parser = argparse.ArgumentParser(description="Warp build script")
@@ -69,9 +75,7 @@ parser.add_argument("--build_llvm", action="store_true", help="Build Clang/LLVM 
 parser.add_argument("--no_build_llvm", dest="build_llvm", action="store_false")
 parser.set_defaults(build_llvm=False)
 
-parser.add_argument(
-    "--llvm_source_path", type=str, help="Path to the LLVM project source code (optional, repo cloned if not set)"
-)
+parser.add_argument("--llvm_source_path", type=str, help="Path to the LLVM project source code (optional, repo cloned if not set)")
 
 parser.add_argument("--debug_llvm", action="store_true", help="Enable LLVM compiler code debugging, default disabled")
 parser.add_argument("--no_debug_llvm", dest="debug_llvm", action="store_false")

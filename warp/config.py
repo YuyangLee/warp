@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os.path as osp
 from typing import Optional
 
-version: str = "1.6.2"
+version: str = "1.6.2-taccel"
 """Warp version string"""
 
 verify_fp: bool = False
