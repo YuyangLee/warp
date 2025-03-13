@@ -1917,7 +1917,7 @@ class Module:
             "block_dim": 256,
         }
 
-        for prefix in [m.strip() for m in os.environ.get("WARP_DISABLE_HASH_PREFIX", "abd").split(",")]:
+        for prefix in [m.strip() for m in os.environ.get("WARP_DISABLE_HASH_PREFIX", "warp_ipc").split(",")]:
             if self.name.startswith(prefix):
                 self.disable_hash = True
                 print(f"Prefix {prefix} hit. Disabling hashing for module {self.name}")
