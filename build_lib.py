@@ -85,6 +85,9 @@ parser.add_argument("--standalone", action="store_true", help="Use standalone LL
 parser.add_argument("--no_standalone", dest="standalone", action="store_false")
 parser.set_defaults(standalone=True)
 
+parser.add_argument("--libmathdx", action="store_true", help="Build Warp with MathDx support, default enabled")
+parser.add_argument("--no_libmathdx", dest="libmathdx", action="store_false")
+parser.set_defaults(libmathdx=True)
 
 args = parser.parse_args()
 
@@ -180,8 +183,12 @@ else:
         args.cuda_path = find_cuda_sdk()
 
     # libmathdx needs to be used with a build of Warp that supports CUDA
-    if not args.libmathdx_path and args.cuda_path:
-        args.libmathdx_path = find_libmathdx()
+    if args.libmathdx:
+        if not args.libmathdx_path and args.cuda_path:
+            args.libmathdx_path = find_libmathdx()
+    else:
+        args.libmathdx_path = None
+
 
 # setup MSVC and WinSDK paths
 if platform.system() == "Windows":
@@ -279,7 +286,7 @@ try:
     else:
         warp_cu_path = os.path.join(build_path, "native/warp.cu")
 
-    if args.libmathdx_path is None:
+    if args.libmathdx and args.libmathdx_path is None:
         print("Warning: libmathdx not found, building without MathDx support")
 
     warp_dll_path = os.path.join(build_path, f"bin/{lib_name('warp')}")

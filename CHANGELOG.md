@@ -26,6 +26,17 @@
 - Add `wp.where()` to select between two arguments conditionally using a
   more intuitive argument order (`cond`, `value_if_true`, `value_if_false`)
   ([GH-469](https://github.com/NVIDIA/warp/issues/469)).
+- Support Python/SASS correlation in Nsight Compute reports by emitting `#line` directives in CUDA-C code.
+  This setting is controlled by `wp.config.line_directives` and is `True` by default.
+  ([docs](https://nvidia.github.io/warp/profiling.html#nsight-compute-profiling),
+   [GH-437](https://github.com/NVIDIA/warp/issues/437))
+- Add `Stream.is_complete` and `Event.is_complete` properties to query completion status
+  ([GH-435](https://github.com/NVIDIA/warp/issues/435)).
+- Add a hinge-angle based bending force to VBDIntegrator.
+- Add the `Device.sm_count` property to get the number of streaming multiprocessors on a CUDA device
+  ([GH-584](https://github.com/NVIDIA/warp/issues/584)).
+- Add an example to show mesh sampling using a CDF
+  ([GH-476](https://github.com/NVIDIA/warp/issues/476)).
 
 ### Changed
 
@@ -44,13 +55,21 @@
 - `wp.sim.Control.reset()` now zeros-out the controls and is deprecated. Use `wp.sim.Control.clear()` instead.
 - Extend `wp.expect_near()` to support all vectors and quaternions.
 - Extend `wp.quat_from_matrix()` to support 4x4 matrices.
+- Structs now have a trivial default constructor, allowing for reductions on struct tile.
+- Extend `wp.tile_broadcast` to support broadcasting to 1d/3d/4d shapes.
 - `@wp.kernel` has now an optional `module` argument that allows passing a `wp.context.Module` to the kernel,
   or, if set to `"unique"` let Warp create a new unique module just for this kernel.
   The default behavior to use the current module is unchanged.
 - Updated the `OgnClothSimulate` node to use the VBD integrator ([GH-512](https://github.com/NVIDIA/warp/issues/512)).
 - Removed the `globalScale` parameter from the `OgnClothSimulate` node.
+- Default PTX architecture is now determined by the devices present in the system ([GH-537](https://github.com/NVIDIA/warp/issues/537)).
 
 ### Fixed
+- Fix an out-of-bounds access bug caused by an unbalanced BVH tree ([GH-536](https://github.com/NVIDIA/warp/issues/536)).
+- Fix an error of incorrectly adding the offset to -1 elements in `edge_indices` when adding a ModelBuilder to another ([GH-557](https://github.com/NVIDIA/warp/issues/557)).
+- Fix the jitter for the `OgnParticlesFromMesh` node not being computed correctly.
+- Fix a code generation bug involving return statements in Warp kernels, which could result in some threads in Warp
+  being skipped when processed on the GPU ([GH-594](https://github.com/NVIDIA/warp/issues/594)).
 
 ## [1.6.2] - 2025-03-07
 

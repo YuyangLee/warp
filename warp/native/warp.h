@@ -279,6 +279,7 @@ extern "C"
     WP_API void* cuda_device_get_primary_context(int ordinal);
     WP_API const char* cuda_device_get_name(int ordinal);
     WP_API int cuda_device_get_arch(int ordinal);
+    WP_API int cuda_device_get_sm_count(int ordinal);
     WP_API void cuda_device_get_uuid(int ordinal, char uuid[16]);
     WP_API int cuda_device_get_pci_domain_id(int ordinal);
     WP_API int cuda_device_get_pci_bus_id(int ordinal);
@@ -325,6 +326,7 @@ extern "C"
 
     WP_API void* cuda_stream_create(void* context, int priority);
     WP_API void cuda_stream_destroy(void* context, void* stream);
+    WP_API int cuda_stream_query(void* stream);
     WP_API void cuda_stream_register(void* context, void* stream);
     WP_API void cuda_stream_unregister(void* context, void* stream);
     WP_API void* cuda_stream_get_current();
@@ -337,6 +339,7 @@ extern "C"
 
     WP_API void* cuda_event_create(void* context, unsigned flags);
     WP_API void cuda_event_destroy(void* event);
+    WP_API int cuda_event_query(void* event);
     WP_API void cuda_event_record(void* event, void* stream, bool timing=false);
     WP_API void cuda_event_synchronize(void* event);
     WP_API float cuda_event_elapsed_time(void* start_event, void* end_event);

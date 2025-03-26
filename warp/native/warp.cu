@@ -155,6 +155,7 @@ struct DeviceInfo
     int arch = 0;
     int is_uva = 0;
     int is_mempool_supported = 0;
+    int sm_count = 0;
     int is_ipc_supported = -1;
     int max_smem_bytes = 0;
     CUcontext primary_context = NULL;
@@ -280,6 +281,7 @@ int cuda_init()
                 check_cu(cuDeviceGetAttribute_f(&g_devices[i].pci_device_id, CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID, device));
                 check_cu(cuDeviceGetAttribute_f(&g_devices[i].is_uva, CU_DEVICE_ATTRIBUTE_UNIFIED_ADDRESSING, device));
                 check_cu(cuDeviceGetAttribute_f(&g_devices[i].is_mempool_supported, CU_DEVICE_ATTRIBUTE_MEMORY_POOLS_SUPPORTED, device));
+                check_cu(cuDeviceGetAttribute_f(&g_devices[i].sm_count, CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, device));
 #ifdef CUDA_VERSION
 #if CUDA_VERSION >= 12000
                 int device_attribute_integrated = 0;
@@ -1786,6 +1788,13 @@ int cuda_device_get_arch(int ordinal)
     return 0;
 }
 
+int cuda_device_get_sm_count(int ordinal)
+{
+    if (ordinal >= 0 && ordinal < int(g_devices.size()))
+        return g_devices[ordinal].sm_count;
+    return 0;
+}
+
 void cuda_device_get_uuid(int ordinal, char uuid[16])
 {
     memcpy(uuid, g_devices[ordinal].uuid.bytes, sizeof(char)*16);
@@ -2427,6 +2436,19 @@ void cuda_stream_destroy(void* context, void* stream)
     check_cu(cuStreamDestroy_f(static_cast<CUstream>(stream)));
 }
 
+int cuda_stream_query(void* stream)
+{
+    CUresult res =  cuStreamQuery_f(static_cast<CUstream>(stream));
+
+    if ((res != CUDA_SUCCESS) && (res != CUDA_ERROR_NOT_READY))
+    {
+        // Abnormal, print out error
+        check_cu(res);
+    }
+
+    return res;
+}
+
 void cuda_stream_register(void* context, void* stream)
 {
     if (!stream)
@@ -2519,6 +2541,19 @@ void* cuda_event_create(void* context, unsigned flags)
 void cuda_event_destroy(void* event)
 {
     check_cu(cuEventDestroy_f(static_cast<CUevent>(event)));
+}
+
+int cuda_event_query(void* event)
+{
+    CUresult res = cuEventQuery_f(static_cast<CUevent>(event));
+
+    if ((res != CUDA_SUCCESS) && (res != CUDA_ERROR_NOT_READY))
+    {
+        // Abnormal, print out error
+        check_cu(res);
+    }
+
+    return res;
 }
 
 void cuda_event_record(void* event, void* stream, bool timing)
@@ -3001,7 +3036,7 @@ size_t cuda_compile_program(const char* cuda_src, const char* program_name, int 
                     fprintf(stderr, "Warp error: num_ltoirs > 0 but ltoir_input_types, ltoirs or ltoir_sizes are NULL\n");
                     return size_t(-1);
                 }
-                nvJitLinkHandle handle;
+                nvJitLinkHandle handle = nullptr;
                 std::vector<const char *> lopts = {"-dlto", arch_opt_lto};
                 if (use_ptx) {
                     lopts.push_back("-ptx");
